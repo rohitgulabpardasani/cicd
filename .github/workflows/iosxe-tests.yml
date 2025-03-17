@@ -25,7 +25,7 @@ jobs:
 
       - name: Run Documentation Checks
         run: |
-          flake8 --select=D test_ios_versions.py
+          flake8 --select=D test_ios_version.py
 
       - name: Run IOS-XE Version Test
         run: python test_ios_version.py
