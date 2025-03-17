@@ -20,6 +20,10 @@ jobs:
       - name: Validate YAML Formatting
         run: python validate_yaml.py
 
+      - name: Run Documentation Checks
+        run: |
+          flake8 --select=D test_ssh_connectivity.py
+
       - name: Run SSH Connectivity Test
         run: python test_ssh_connectivity.py
 
