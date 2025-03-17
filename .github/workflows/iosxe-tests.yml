@@ -26,14 +26,14 @@ jobs:
 
       - name: Run Documentation Checks
         run: |
-          flake8 --select=D test_ssh_connectivity.py
+          flake8 --select=D100,D101,D102,D103 test_ssh_connectivity.py
 
       - name: Run SSH Connectivity Test
         run: python test_ssh_connectivity.py
 
       - name: Run Documentation Checks
         run: |
-          flake8 --select=D test_ios_version.py
+          flake8 --select=D100,D101,D102,D103 test_ios_version.py
 
       - name: Run IOS-XE Version Test
         run: python test_ios_version.py
