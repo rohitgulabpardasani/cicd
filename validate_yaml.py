@@ -16,7 +16,7 @@ def validate_yaml(file_path):
         print("✅ YAML Formatting: Valid")
         return True
     except yaml.YAMLError as e:
-        print(f"❌ YAML Formatting Error: {e}")
+        print(f"❌ YAML Formatting Error: {e.problem} at line {e.problem_mark.line+1}, column {e.problem_mark.column+1}")
         return False
 
 if __name__ == "__main__":
