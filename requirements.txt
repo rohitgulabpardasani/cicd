@@ -1,3 +1,2 @@
 netmiko
 pyyaml
-colorama
