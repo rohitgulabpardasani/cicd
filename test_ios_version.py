@@ -4,7 +4,7 @@ from netmiko import ConnectHandler
 from colorama import Fore, Style, init
 
 # Initialize colorama for color support
-init()
+init(autoreset=True)
 
 def load_devices():
     """Loads device credentials from devices.yaml."""
@@ -14,6 +14,9 @@ def load_devices():
             if "devices" not in data:
                 raise KeyError("Missing 'devices' key in YAML file")
             return data["devices"]
+    except FileNotFoundError:
+        print(f"{Fore.RED}❌ Error: devices.yaml file not found.{Style.RESET_ALL}")
+        sys.exit(1)
     except yaml.YAMLError as e:
         print(f"{Fore.RED}❌ YAML Parsing Error: {e}{Style.RESET_ALL}")
         sys.exit(1)
@@ -32,7 +35,7 @@ def get_device_version(device):
         if "os_type" not in device:
             raise KeyError("Missing 'os_type' in device configuration")
 
-        os_type = device["os_type"]
+        os_type = device["os_type"].lower()
         if os_type == "ios-xe":
             device_type = "cisco_ios"
             command = "show version | include Cisco IOS XE Software"
@@ -47,10 +50,15 @@ def get_device_version(device):
             host=device["host"],
             username=device["username"],
             password=device["password"],
-            port=device["port"]
+            port=device.get("port", 22),
+            timeout=10  # Timeout to avoid long delays on unreachable devices
         )
+        
         output = connection.send_command(command)
         connection.disconnect()
+
+        if not output.strip():
+            return f"{Fore.YELLOW}⚠️ No version information found{Style.RESET_ALL}"
 
         return output.strip()
 
@@ -68,11 +76,18 @@ if __name__ == "__main__":
     devices = load_devices()
     print(f"\n{Fore.CYAN}🔍 Checking Cisco Device Versions...{Style.RESET_ALL}\n")
 
+    success_count = 0
+    failure_count = 0
+
     for device in devices:
         version_output = get_device_version(device)
         if version_output != "ERROR":
             print(f"{Fore.GREEN}✅ {device['name']} ({device['host']}) - {device['os_type'].upper()} Version: {version_output}{Style.RESET_ALL}")
+            success_count += 1
         else:
             print(f"{Fore.RED}❌ {device['name']} ({device['host']}) - Unreachable or Error{Style.RESET_ALL}")
+            failure_count += 1
 
-    print(f"\n{Fore.CYAN}✔️ Completed Version Checks.{Style.RESET_ALL}\n")
+    print(f"\n{Fore.CYAN}✔️ Completed Version Checks.{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}✅ Successfully Retrieved Versions: {success_count}{Style.RESET_ALL}")
+    print(f"{Fore.RED}❌ Unreachable Devices: {failure_count}{Style.RESET_ALL}\n")
