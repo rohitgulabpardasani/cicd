@@ -1,13 +1,12 @@
 import yaml
 from netmiko import ConnectHandler
+from colorama import Fore, Style, init
+
+# Initialize colorama for colored output
+init(autoreset=True)
 
 def load_devices():
-    """
-    Loads device credentials from devices.yaml.
-
-    Returns:
-        list: List of devices from the YAML file.
-    """
+    """Loads device credentials from devices.yaml."""
     try:
         with open("devices.yaml", "r") as file:
             data = yaml.safe_load(file)
@@ -15,13 +14,10 @@ def load_devices():
                 raise KeyError("Missing 'devices' key in YAML file")
             return data["devices"]
     except yaml.YAMLError as e:
-        print(f"❌ YAML Parsing Error: {e}")
-        exit(1)
-    except FileNotFoundError:
-        print("❌ Error: devices.yaml file not found.")
+        print(Fore.RED + f"❌ YAML Parsing Error: {e}")
         exit(1)
 
-def get_device_version(device):
+def get_ios_version(device):
     """
     Connects to a Cisco IOS-XE or IOS-XR device and retrieves the version.
 
@@ -29,11 +25,11 @@ def get_device_version(device):
         device (dict): Device connection details.
 
     Returns:
-        str: IOS-XE or IOS-XR version, or an error message if unreachable.
+        str: IOS version if successful, or an error message.
     """
     try:
         if "os_type" not in device:
-            raise KeyError(f"❌ Missing 'os_type' for device {device.get('name', 'Unknown Device')}")
+            raise KeyError("Missing 'os_type' in device configuration")
 
         os_type = device["os_type"]
         if os_type == "ios-xe":
@@ -43,33 +39,32 @@ def get_device_version(device):
             device_type = "cisco_xr"
             command = "show version | include Cisco IOS XR Software"
         else:
-            raise ValueError(f"❌ Unsupported OS type: {os_type}")
+            raise ValueError(f"Unsupported OS type: {os_type}")
 
         connection = ConnectHandler(
             device_type=device_type,
             host=device["host"],
             username=device["username"],
             password=device["password"],
-            port=device.get("port", 22)  # Default SSH port is 22
+            port=device["port"]
         )
         output = connection.send_command(command)
         connection.disconnect()
 
-        return output.strip() if output else "❌ No version info retrieved"
+        if output:
+            return Fore.GREEN + f"{device['host']} - {device['name']} - {device['os_type'].upper()} Version: {output.strip()}"
+        else:
+            return Fore.YELLOW + f"{device['host']} - {device['name']} - {device['os_type'].upper()} Version: No output received"
 
     except KeyError as e:
-        return f"❌ Missing Key: {e}"
+        return Fore.RED + f"{device['host']} - {device['name']} ❌ Missing key in device config: {e}"
     except ValueError as e:
-        return f"❌ Configuration Error: {e}"
+        return Fore.RED + f"{device['host']} - {device['name']} ❌ Configuration Error: {e}"
     except Exception as e:
-        return f"❌ Connection Failed: {device['host']} - {e}"
+        return Fore.RED + f"{device['host']} - {device['name']} ❌ Connection Failed: {e}"
 
 if __name__ == "__main__":
     devices = load_devices()
-    print("\n🔍 Checking Cisco IOS Versions...\n")
-    
+    print(Fore.CYAN + "\n🔍 Checking IOS Versions...\n")
     for device in devices:
-        version_output = get_device_version(device)
-        print(f"📡 {device['name']} ({device['host']}) - {device['os_type'].upper()} Version: {version_output}")
-
-    print("\n✅ Version Check Completed.\n")
+        print(get_ios_version(device))
