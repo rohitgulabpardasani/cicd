@@ -1,4 +1,4 @@
-name: CI/CD Testing for Cisco IOS-XE
+name: CI/CD Testing for Cisco IOS-XE & IOS-XR
 
 on:
   pull_request:
