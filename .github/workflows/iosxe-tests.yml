@@ -23,6 +23,10 @@ jobs:
       - name: Run SSH Connectivity Test
         run: python test_ssh_connectivity.py
 
+      - name: Run Documentation Checks
+        run: |
+          flake8 --select=D display_device_versions.py
+
       - name: Run IOS-XE Version Test
         run: python test_ios_version.py
 
