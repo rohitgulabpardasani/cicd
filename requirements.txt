@@ -2,3 +2,4 @@ netmiko
 pyyaml
 flake8
 flake8-docstrings
+paramiko
