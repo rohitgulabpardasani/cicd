@@ -17,21 +17,21 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run Documentation Checks
+      - name: Run Docstring Check on validate_yaml.py
         run: |
           flake8 --select=D100,D101,D102,D103 validate_yaml.py
           
       - name: Validate YAML Formatting
         run: python validate_yaml.py
 
-      - name: Run Documentation Checks
+      - name: Run Docstring Check on test_ssh_connectivity.py
         run: |
           flake8 --select=D100,D101,D102,D103 test_ssh_connectivity.py
 
       - name: Run SSH Connectivity Test
         run: python test_ssh_connectivity.py
 
-      - name: Run Documentation Checks
+      - name: Run Docstring Check on test_ios_version.py
         run: |
           flake8 --select=D100,D101,D102,D103 test_ios_version.py
 
