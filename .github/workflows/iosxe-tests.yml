@@ -16,7 +16,11 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
+
+      - name: Run Documentation Checks
+        run: |
+          flake8 --select=D validate_yaml.py
+          
       - name: Validate YAML Formatting
         run: python validate_yaml.py
 
