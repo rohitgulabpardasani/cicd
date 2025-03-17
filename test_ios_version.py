@@ -1,9 +1,10 @@
 import yaml
+import sys
 from netmiko import ConnectHandler
 from colorama import Fore, Style, init
 
-# Initialize colorama for colored output
-init(autoreset=True)
+# Initialize colorama for color support
+init()
 
 def load_devices():
     """Loads device credentials from devices.yaml."""
@@ -14,18 +15,18 @@ def load_devices():
                 raise KeyError("Missing 'devices' key in YAML file")
             return data["devices"]
     except yaml.YAMLError as e:
-        print(Fore.RED + f"❌ YAML Parsing Error: {e}")
-        exit(1)
+        print(f"{Fore.RED}❌ YAML Parsing Error: {e}{Style.RESET_ALL}")
+        sys.exit(1)
 
-def get_ios_version(device):
+def get_device_version(device):
     """
-    Connects to a Cisco IOS-XE or IOS-XR device and retrieves the version.
+    Connects to a Cisco device (IOS-XE or IOS-XR) and retrieves the version.
 
     Args:
         device (dict): Device connection details.
 
     Returns:
-        str: IOS version if successful, or an error message.
+        str: OS version if successful, "ERROR" if unreachable.
     """
     try:
         if "os_type" not in device:
@@ -51,20 +52,27 @@ def get_ios_version(device):
         output = connection.send_command(command)
         connection.disconnect()
 
-        if output:
-            return Fore.GREEN + f"{device['host']} - {device['name']} - {device['os_type'].upper()} Version: {output.strip()}"
-        else:
-            return Fore.YELLOW + f"{device['host']} - {device['name']} - {device['os_type'].upper()} Version: No output received"
+        return output.strip()
 
     except KeyError as e:
-        return Fore.RED + f"{device['host']} - {device['name']} ❌ Missing key in device config: {e}"
+        print(f"{Fore.RED}❌ Missing key in device config: {e}{Style.RESET_ALL}")
+        return "ERROR"
     except ValueError as e:
-        return Fore.RED + f"{device['host']} - {device['name']} ❌ Configuration Error: {e}"
+        print(f"{Fore.RED}❌ Configuration Error: {e}{Style.RESET_ALL}")
+        return "ERROR"
     except Exception as e:
-        return Fore.RED + f"{device['host']} - {device['name']} ❌ Connection Failed: {e}"
+        print(f"{Fore.RED}❌ {device['name']} ({device['host']}) - Unreachable: {e}{Style.RESET_ALL}")
+        return "ERROR"
 
 if __name__ == "__main__":
     devices = load_devices()
-    print(Fore.CYAN + "\n🔍 Checking IOS Versions...\n")
+    print(f"\n{Fore.CYAN}🔍 Checking Cisco Device Versions...{Style.RESET_ALL}\n")
+
     for device in devices:
-        print(get_ios_version(device))
+        version_output = get_device_version(device)
+        if version_output != "ERROR":
+            print(f"{Fore.GREEN}✅ {device['name']} ({device['host']}) - {device['os_type'].upper()} Version: {version_output}{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.RED}❌ {device['name']} ({device['host']}) - Unreachable or Error{Style.RESET_ALL}")
+
+    print(f"\n{Fore.CYAN}✔️ Completed Version Checks.{Style.RESET_ALL}\n")
