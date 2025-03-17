@@ -12,3 +12,10 @@ devices:
     username: "admin"
     password: "C1sco12345"
     port: 22
+
+  - name: "Unreachable Device"
+    os_type: "ios-xe"
+    host: "192.168.100.1"  # This IP is unreachable
+    username: "admin"
+    password: "wrongpassword"
+    port: 22
