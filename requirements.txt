@@ -1,5 +1,4 @@
 netmiko
 pyyaml
 colorama
-sys
 yaml
