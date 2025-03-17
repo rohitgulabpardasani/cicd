@@ -1,6 +1,14 @@
 devices:
   - name: "Cisco Sandbox IOS-XE"
+    os_type: "ios-xe"
     host: "devnetsandboxiosxe.cisco.com"
+    username: "admin"
+    password: "C1sco12345"
+    port: 22
+
+  - name: "Cisco Sandbox IOS-XR"
+    os_type: "ios-xr"
+    host: "sandbox-iosxr-1.cisco.com"
     username: "admin"
     password: "C1sco12345"
     port: 22
