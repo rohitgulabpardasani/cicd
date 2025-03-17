@@ -11,4 +11,4 @@ devices:
     host: "sandbox-iosxr-1.cisco.com"
     username: "admin"
     password: "C1sco12345"
-    port: 22
+     port: 22
