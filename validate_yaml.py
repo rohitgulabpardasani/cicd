@@ -1,3 +1,7 @@
+"""
+This YAML file validates the indentation/formatting of the devices.yaml file
+"""
+
 import yaml
 
 def validate_yaml(file_path):
