@@ -13,9 +13,9 @@ devices:
     password: "C1sco12345"
     port: 22
 
-  - name: "Unreachable Device"
+  - name: "R1.ine.com"
     os_type: "ios-xe"
-    host: "192.168.100.1"  # This IP is unreachable
+    host: "192.168.100.1"
     username: "admin"
-    password: "wrongpassword"
-    port: 22
+    password: "cisco"
+     port: 22
