@@ -1,3 +1,7 @@
+"""
+This Script retrieves the version of all IOS-XE and IOS-XR routers.
+"""
+
 import yaml
 import sys
 from netmiko import ConnectHandler
