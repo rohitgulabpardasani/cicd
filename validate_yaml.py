@@ -1,15 +1,6 @@
 import yaml
 
 def validate_yaml(file_path):
-    """
-    Validates the formatting of a YAML file.
-
-    Args:
-        file_path (str): Path to the YAML file.
-
-    Returns:
-        bool: True if valid, False if formatting is incorrect.
-    """
     try:
         with open(file_path, "r") as file:
             yaml.safe_load(file)
