@@ -21,7 +21,7 @@ jobs:
         run: |
           flake8 --select=D100,D101,D102,D103 validate_yaml.py
           
-      - name: Validate YAML Formatting
+      - name: Validate devices.yaml Indenting/Formatting
         run: python validate_yaml.py
 
       - name: Run Docstring Check on test_ssh_connectivity.py
